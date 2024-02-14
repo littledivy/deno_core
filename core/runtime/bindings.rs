@@ -89,6 +89,7 @@ pub(crate) fn create_external_references(
 
   references.extend_from_slice(additional_references);
 
+  // println!("references: {:?}", references);
   let refs = v8::ExternalReferences::new(&references);
   let refs: &'static v8::ExternalReferences = Box::leak(Box::new(refs));
   refs

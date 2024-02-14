@@ -159,6 +159,25 @@ pub fn get_middlewares_and_external_refs(
   let mut additional_references = Vec::with_capacity(16);
 
   for extension in extensions {
+    for js_source in extension.esm_files.iter() {
+      match js_source.code {
+        crate::ExtensionFileSourceCode::IncludedInBinary(s, o) => {
+          // Debugging.
+          if js_source.specifier == "ext:deno_crypto/00_crypto.js" {
+            println!(
+              "crypto source pointer: {:?}",
+              o as *const v8::OneByteConst
+            );
+            // println!("{:#?}", std::str::from_utf8(unsafe {std::slice::from_raw_parts(o.cached_data as _, o.length) }).unwrap());
+          }
+          additional_references.push(v8::ExternalReference {
+            pointer: o as *const v8::OneByteConst as *mut _,
+          });
+        }
+        _ => {}
+      }
+    }
+
     if let Some(middleware) = extension.get_global_template_middleware() {
       global_template_middlewares.push(middleware);
     }

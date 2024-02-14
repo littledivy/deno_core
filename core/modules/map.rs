@@ -506,9 +506,17 @@ impl ModuleMap {
         ))));
       }
     }
-
     let name_str = name.v8(scope);
     let source_str = source.v8(scope);
+
+    if name.as_ref() == "ext:deno_crypto/00_crypto.js" {
+      println!(
+        "new_module_from_js_source ptr: {:?}",
+        source.as_bytes().as_ptr()
+      );
+      let (base, _) = source_str.get_external_string_resource_base();
+      println!("new_module_from_js_source base: {:?}", base);
+    }
 
     let origin = module_origin(scope, name_str);
     let source = v8::script_compiler::Source::new(source_str, Some(&origin));

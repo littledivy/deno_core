@@ -17,7 +17,7 @@ pub enum ExtensionFileSourceCode {
   /// will result in two copies of the source code being included - one in the
   /// snapshot, the other the static string in the `Extension`.
   #[deprecated = "Use ExtensionFileSource::new"]
-  IncludedInBinary(&'static str),
+  IncludedInBinary(&'static str, &'static v8::OneByteConst),
 
   // Source code is loaded from a file on disk. It's meant to be used if the
   // embedder is creating snapshots. Files will be loaded from the filesystem
@@ -57,11 +57,15 @@ pub struct ExtensionFileSource {
 }
 
 impl ExtensionFileSource {
-  pub const fn new(specifier: &'static str, code: &'static str) -> Self {
+  pub const fn new(
+    specifier: &'static str,
+    code: &'static str,
+    one_byte_const: &'static v8::OneByteConst,
+  ) -> Self {
     #[allow(deprecated)]
     Self {
       specifier,
-      code: ExtensionFileSourceCode::IncludedInBinary(code),
+      code: ExtensionFileSourceCode::IncludedInBinary(code, one_byte_const),
       _unconstructable_use_new: PhantomData,
     }
   }
@@ -106,8 +110,7 @@ impl ExtensionFileSource {
   #[allow(deprecated)]
   pub fn load(&self) -> Result<ModuleCodeString, Error> {
     match &self.code {
-      ExtensionFileSourceCode::LoadedFromMemoryDuringSnapshot(code)
-      | ExtensionFileSourceCode::IncludedInBinary(code) => {
+      ExtensionFileSourceCode::LoadedFromMemoryDuringSnapshot(code) => {
         debug_assert!(
           code.is_ascii(),
           "Extension code must be 7-bit ASCII: {} (found {})",
@@ -115,6 +118,15 @@ impl ExtensionFileSource {
           Self::find_non_ascii(code)
         );
         Ok(ModuleCodeString::from_static(code))
+      }
+      ExtensionFileSourceCode::IncludedInBinary(code, s) => {
+        debug_assert!(
+          code.is_ascii(),
+          "Extension code must be 7-bit ASCII: {} (found {})",
+          self.specifier,
+          Self::find_non_ascii(code)
+        );
+        Ok(ModuleCodeString::StaticAscii2(code, s))
       }
       ExtensionFileSourceCode::LoadedFromFsDuringSnapshot(path) => {
         let msg = || format!("Failed to read \"{}\"", path);
@@ -418,22 +430,22 @@ macro_rules! extension {
           // Computed at compile-time, may be modified at runtime with `Cow`:
           name: ::std::stringify!($name),
           deps: &[ $( $( ::std::stringify!($dep) ),* )? ],
-          // Use intermediary `const`s here to disable user expressions which
+          // Use intermediary `static`s here to disable user expressions which
           // can't be evaluated at compile-time.
           js_files: {
-            const JS: &'static [$crate::ExtensionFileSource] = &$crate::include_js_files!( $name $($($js)*)? );
+            static JS: &'static [$crate::ExtensionFileSource] = &$crate::include_js_files!( $name $($($js)*)? );
             ::std::borrow::Cow::Borrowed(JS)
           },
           esm_files: {
-            const JS: &'static [$crate::ExtensionFileSource] = &$crate::include_js_files!( $name $($($esm)*)? );
+            static JS: &'static [$crate::ExtensionFileSource] = &$crate::include_js_files!( $name $($($esm)*)? );
             ::std::borrow::Cow::Borrowed(JS)
           },
           lazy_loaded_esm_files: {
-            const JS: &'static [$crate::ExtensionFileSource] = &$crate::include_lazy_loaded_js_files!( $name $($($lazy_loaded_esm)*)? );
+            static JS: &'static [$crate::ExtensionFileSource] = &$crate::include_lazy_loaded_js_files!( $name $($($lazy_loaded_esm)*)? );
             ::std::borrow::Cow::Borrowed(JS)
           },
           esm_entry_point: {
-            const V: ::std::option::Option<&'static ::std::primitive::str> = $crate::or!($(::std::option::Option::Some($esm_entry_point))?, ::std::option::Option::None);
+            static V: ::std::option::Option<&'static ::std::primitive::str> = $crate::or!($(::std::option::Option::Some($esm_entry_point))?, ::std::option::Option::None);
             V
           },
           ops: ::std::borrow::Cow::Borrowed(&[$($(
@@ -881,11 +893,14 @@ macro_rules! __extension_include_js_files_inner {
   };
   // included, source
   (@item mode=included, specifier=$specifier:expr, source=$source:expr) => {
-    $crate::ExtensionFileSource::new($specifier, $source)
+    {
+    static _A: $crate::v8::OneByteConst = $crate::v8::String::create_external_onebyte_const($source.as_bytes());
+    $crate::ExtensionFileSource::new($specifier, $source, &_A)
+    }
   };
   // included, file
   (@item mode=included, dir=$dir:expr, specifier=$specifier:expr, file=$file:literal) => {
-    $crate::ExtensionFileSource::new($specifier, include_str!(concat!($dir, "/", $file)))
+    $crate::__extension_include_js_files_inner!(@item mode=included, specifier=$specifier, source=include_str!(concat!($dir, "/", $file)))
   };
 }
 

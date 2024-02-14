@@ -27,6 +27,8 @@ pub enum FastString {
   /// Created from static data, known to contain only ASCII chars.
   StaticAscii(&'static str),
 
+  StaticAscii2(&'static str, &'static v8::OneByteConst),
+
   /// An owned chunk of data. Note that we use `Box` rather than `Vec` to avoid the
   /// storage overhead.
   Owned(Box<str>),
@@ -80,6 +82,7 @@ impl FastString {
         let s: Arc<str> = s.into();
         (Self::Arc(s.clone()), Self::Arc(s))
       }
+      _ => todo!(),
     }
   }
 
@@ -90,6 +93,7 @@ impl FastString {
       Self::StaticAscii(s) => Some(Self::StaticAscii(s)),
       Self::Arc(s) => Some(Self::Arc(s.clone())),
       Self::Owned(_s) => None,
+      _ => todo!(),
     }
   }
 
@@ -107,6 +111,7 @@ impl FastString {
       Self::Owned(s) => s.as_bytes(),
       Self::Static(s) => s.as_bytes(),
       Self::StaticAscii(s) => s.as_bytes(),
+      Self::StaticAscii2(s, _) => s.as_bytes(),
     }
   }
 
@@ -117,6 +122,7 @@ impl FastString {
       Self::Owned(s) => s,
       Self::Static(s) => s,
       Self::StaticAscii(s) => s,
+      Self::StaticAscii2(s, _) => s,
     }
   }
 
@@ -126,6 +132,10 @@ impl FastString {
     &self,
     scope: &mut v8::HandleScope<'a>,
   ) -> v8::Local<'a, v8::String> {
+    if let Self::StaticAscii2(_, o) = self {
+      return v8::String::new_from_onebyte_const(scope, o).unwrap();
+    }
+
     match self.try_static_ascii() {
       Some(s) => v8::String::new_external_onebyte_static(scope, s).unwrap(),
       None => {
@@ -143,6 +153,7 @@ impl FastString {
       Self::Owned(b) => *self = Self::Owned(b[..index].to_owned().into()),
       // We can't do much if we have an Arc<str>, so we'll just take ownership of the truncated version
       Self::Arc(s) => *self = s[..index].to_owned().into(),
+      _ => todo!(),
     }
   }
 

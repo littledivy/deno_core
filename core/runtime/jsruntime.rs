@@ -427,6 +427,9 @@ pub struct RuntimeOptions {
   /// Should op registration be skipped?
   pub skip_op_registration: bool,
 
+  /// Skip extension source execution.
+  pub skip_extension_sources: bool,
+
   /// Isolate creation parameters.
   pub create_params: Option<v8::CreateParams>,
 
@@ -721,6 +724,14 @@ impl JsRuntime {
       v8::HandleScope::with_context(&mut isolate, &main_context);
     let scope = &mut context_scope;
     let context = v8::Local::new(scope, &main_context);
+
+    if options.skip_extension_sources {
+      for extension in &mut extensions {
+        extension.js_files = std::borrow::Cow::Borrowed(&[]);
+        extension.esm_files = std::borrow::Cow::Borrowed(&[]);
+        extension.esm_entry_point = None;
+      }
+    }
 
     // ...followed by creation of `Deno.core` namespace, as well as internal
     // infrastructure to provide JavaScript bindings for ops...
