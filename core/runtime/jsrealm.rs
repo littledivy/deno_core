@@ -46,6 +46,13 @@ impl Hasher for IdentityHasher {
   }
 }
 
+pub type WasmStreamingFn = fn(
+  Rc<RefCell<crate::OpState>>,
+  &mut v8::HandleScope,
+  v8::Local<v8::Value>,
+  v8::WasmStreaming,
+);
+
 /// We may wish to experiment with alternative drivers in the future.
 pub(crate) type OpDriverImpl = super::op_driver::FuturesUnorderedDriver;
 
@@ -54,8 +61,7 @@ pub(crate) struct ContextState {
   pub(crate) timers: WebTimers<(v8::Global<v8::Function>, u32)>,
   pub(crate) js_event_loop_tick_cb:
     RefCell<Option<Rc<v8::Global<v8::Function>>>>,
-  pub(crate) js_wasm_streaming_cb:
-    RefCell<Option<Rc<v8::Global<v8::Function>>>>,
+  pub(crate) wasm_streaming_cb: Option<Rc<RefCell<WasmStreamingFn>>>,
   pub(crate) wasm_instantiate_fn: RefCell<Option<Rc<v8::Global<v8::Function>>>>,
   pub(crate) unrefed_ops:
     RefCell<HashSet<i32, BuildHasherDefault<IdentityHasher>>>,
@@ -83,7 +89,7 @@ impl ContextState {
       exception_state: Default::default(),
       has_next_tick_scheduled: Default::default(),
       js_event_loop_tick_cb: Default::default(),
-      js_wasm_streaming_cb: Default::default(),
+      wasm_streaming_cb: Default::default(),
       wasm_instantiate_fn: Default::default(),
       activity_traces: Default::default(),
       op_ctxs,
@@ -179,7 +185,6 @@ impl JsRealmInner {
     // These globals will prevent snapshots from completing, take them
     state.exception_state.prepare_to_destroy();
     std::mem::take(&mut *state.js_event_loop_tick_cb.borrow_mut());
-    std::mem::take(&mut *state.js_wasm_streaming_cb.borrow_mut());
 
     self.context().open(isolate).clear_all_slots(isolate);
 
