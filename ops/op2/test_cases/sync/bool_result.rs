@@ -4,7 +4,7 @@ deno_ops_compile_test_runner::prelude!();
 
 use deno_core::error::AnyError;
 
-#[op2(fast)]
+#[op2]
 pub fn op_bool(arg: bool) -> Result<bool, AnyError> {
   Ok(arg)
 }

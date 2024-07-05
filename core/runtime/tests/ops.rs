@@ -166,7 +166,7 @@ fn test_op_return_serde_v8_error() {
 
 #[test]
 fn test_op_high_arity() {
-  #[op2(fast)]
+  #[op2]
   #[number]
   fn op_add_4(
     #[number] x1: i64,
@@ -191,7 +191,7 @@ fn test_op_high_arity() {
 
 #[test]
 fn test_op_disabled() {
-  #[op2(fast)]
+  #[op2]
   #[number]
   fn op_foo() -> Result<i64, anyhow::Error> {
     Ok(42)
@@ -570,17 +570,17 @@ pub async fn op_async_lazy() {
   println!("op_async_lazy!");
 }
 
-#[op2(fast)]
+#[op2]
 pub fn op_sync() {
   println!("op_sync!");
 }
 
-#[op2(fast)]
+#[op2]
 pub fn op_sync_error() -> Result<(), AnyError> {
   bail!("Always fails");
 }
 
-#[op2(fast)]
+#[op2]
 pub fn op_sync_arg_error(_: u32) {
   panic!("Should never be called")
 }

@@ -7,7 +7,7 @@ pub type Int32 = i32;
 pub type Uint16 = u16;
 pub type Uint32 = u32;
 
-#[op2(fast)]
+#[op2]
 #[smi]
 fn op_smi_unsigned_return(
   #[smi] a: Int16,
@@ -18,7 +18,7 @@ fn op_smi_unsigned_return(
   a as Uint32 + b as Uint32 + c as Uint32 + d as Uint32
 }
 
-#[op2(fast)]
+#[op2]
 #[smi]
 fn op_smi_signed_return(
   #[smi] a: Int16,

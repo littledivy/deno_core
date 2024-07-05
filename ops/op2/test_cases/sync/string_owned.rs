@@ -2,7 +2,7 @@
 #![deny(warnings)]
 deno_ops_compile_test_runner::prelude!();
 
-#[op2(fast)]
+#[op2]
 fn op_string_owned(#[string] s: String) -> u32 {
   s.len() as _
 }

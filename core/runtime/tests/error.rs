@@ -10,7 +10,7 @@ use std::task::Poll;
 
 #[tokio::test]
 async fn test_error_builder() {
-  #[op2(fast)]
+  #[op2]
   fn op_err() -> Result<(), Error> {
     Err(custom_error("DOMExceptionOperationError", "abc"))
   }

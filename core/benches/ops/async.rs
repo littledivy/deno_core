@@ -42,10 +42,10 @@ pub fn op_resolve_promise<'s>(
   resolver.get_promise(scope)
 }
 
-#[op2(fast)]
+#[op2]
 pub fn op_void() {}
 
-#[op2(fast)]
+#[op2]
 pub fn op_make_external() -> *const c_void {
   std::ptr::null()
 }

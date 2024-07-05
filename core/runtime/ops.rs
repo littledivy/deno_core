@@ -654,12 +654,12 @@ mod tests {
     static FAIL: Cell<bool> = const { Cell::new(false) }
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_fail() {
     FAIL.with(|b| b.set(true))
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_print_debug(#[string] s: &str) {
     println!("{s}")
   }
@@ -771,7 +771,7 @@ mod tests {
     assert!(run_test2(1, "", "assert(false)").is_err());
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_add(a: u32, b: i32) -> u32 {
     (a as i32 + b) as u32
   }
@@ -814,7 +814,7 @@ mod tests {
 
   // Note: #[smi] parameters are signed in JS regardless of the sign in Rust. Overflow and underflow
   // of valid ranges result in automatic wrapping.
-  #[op2(fast)]
+  #[op2]
   #[smi]
   pub fn op_test_add_smi_unsigned(#[smi] a: u32, #[smi] b: u16) -> u32 {
     a + b as u32
@@ -861,7 +861,7 @@ mod tests {
     static RETURN_COUNT: Cell<usize> = const { Cell::new(0) };
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_result_void_switch() -> Result<(), AnyError> {
     let count = RETURN_COUNT.with(|count| {
       let new = count.get() + 1;
@@ -875,12 +875,12 @@ mod tests {
     }
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_result_void_err() -> Result<(), AnyError> {
     Err(generic_error("failed!!!"))
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_result_void_ok() -> Result<(), AnyError> {
     Ok(())
   }
@@ -917,12 +917,12 @@ mod tests {
     Ok(())
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_result_primitive_err() -> Result<u32, AnyError> {
     Err(generic_error("failed!!!"))
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_result_primitive_ok() -> Result<u32, AnyError> {
     Ok(123)
   }
@@ -943,12 +943,12 @@ mod tests {
     Ok(())
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_bool(b: bool) -> bool {
     b
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_bool_result(b: bool) -> Result<bool, AnyError> {
     if b {
       Ok(true)
@@ -977,12 +977,12 @@ mod tests {
     Ok(())
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_float(a: f32, b: f64) -> f32 {
     a + b as f32
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_float_result(a: f32, b: f64) -> Result<f64, AnyError> {
     let a = a as f64;
     if a + b >= 0. {
@@ -1012,19 +1012,19 @@ mod tests {
     Ok(())
   }
 
-  #[op2(fast)]
+  #[op2]
   #[bigint]
   pub fn op_test_bigint_u64(#[bigint] input: u64) -> u64 {
     input
   }
 
-  #[op2(fast)]
+  #[op2]
   #[bigint]
   pub fn op_test_bigint_i64(#[bigint] input: i64) -> i64 {
     input
   }
 
-  #[op2(fast)]
+  #[op2]
   #[number]
   pub fn op_test_bigint_i64_as_number(#[number] input: i64) -> i64 {
     input
@@ -1060,27 +1060,27 @@ mod tests {
     Ok(())
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_string_owned(#[string] s: String) -> u32 {
     s.len() as _
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_string_ref(#[string] s: &str) -> u32 {
     s.len() as _
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_string_cow(#[string] s: Cow<str>) -> u32 {
     s.len() as _
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_string_roundtrip_char(#[string] s: Cow<str>) -> u32 {
     s.chars().next().unwrap() as u32
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_string_roundtrip_char_onebyte(
     #[string(onebyte)] s: Cow<[u8]>,
   ) -> u32 {
@@ -1225,12 +1225,12 @@ mod tests {
   }
 
   // We don't actually test this one -- we just want it to compile
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_generics<T: Clone>() {}
 
   /// Tests v8 types without a handle scope
   #[allow(clippy::needless_lifetimes)]
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_v8_types<'s>(
     s: &v8::String,
     s2: v8::Local<v8::String>,
@@ -1245,7 +1245,7 @@ mod tests {
     }
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_test_v8_option_string(s: Option<&v8::String>) -> i32 {
     if let Some(s) = s {
       s.length() as i32
@@ -1396,7 +1396,7 @@ mod tests {
     Ok(())
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_jsruntimestate(_state: &JsRuntimeState) {}
 
   #[tokio::test]
@@ -1405,32 +1405,32 @@ mod tests {
     Ok(())
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_state_rc(state: Rc<RefCell<OpState>>, value: u32) -> u32 {
     let old_value: u32 = state.borrow_mut().take();
     state.borrow_mut().put(value);
     old_value
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_state_ref(state: &OpState) -> u32 {
     let old_value: &u32 = state.borrow();
     *old_value
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_state_mut(state: &mut OpState, value: u32) {
     *state.borrow_mut() = value;
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_state_mut_attr(#[state] value: &mut u32, new_value: u32) -> u32 {
     let old_value = *value;
     *value = new_value;
     old_value
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_state_multi_attr(
     #[state] value32: &u32,
     #[state] value16: &u16,
@@ -1466,7 +1466,7 @@ mod tests {
     Ok(())
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_buffer_slice(
     #[buffer] input: &[u8],
     #[number] inlen: usize,
@@ -1480,7 +1480,7 @@ mod tests {
     }
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_buffer_ptr(
     #[buffer] input: *const u8,
     #[number] inlen: usize,
@@ -1493,7 +1493,7 @@ mod tests {
     }
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_buffer_slice_32(
     #[buffer] input: &[u32],
     #[number] inlen: usize,
@@ -1507,7 +1507,7 @@ mod tests {
     }
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_buffer_ptr_32(
     #[buffer] input: *const u32,
     #[number] inlen: usize,
@@ -1520,7 +1520,7 @@ mod tests {
     }
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_buffer_slice_f64(
     #[buffer] input: &[f64],
     #[number] inlen: usize,
@@ -1534,7 +1534,7 @@ mod tests {
     }
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_buffer_ptr_f64(
     #[buffer] input: *const f64,
     #[number] inlen: usize,
@@ -1776,7 +1776,7 @@ mod tests {
     Ok(())
   }
 
-  #[op2(fast)]
+  #[op2]
   pub fn op_arraybuffer_slice(
     #[arraybuffer] input: &[u8],
     #[number] inlen: usize,
@@ -1842,7 +1842,7 @@ mod tests {
 
   /// Ensures that three copies are independent. Note that we cannot mutate the
   /// `bytes::Bytes`.
-  #[op2(fast)]
+  #[op2]
   #[allow(clippy::boxed_local)] // Clippy bug? It warns about input2
   pub fn op_buffer_copy(
     #[buffer(copy)] mut input1: Vec<u8>,
@@ -1927,7 +1927,7 @@ mod tests {
     resource.value
   }
 
-  #[op2(fast)]
+  #[op2]
   #[smi]
   pub fn op_test_get_cppgc_resource_option(
     #[cppgc] resource: Option<&TestResource>,
@@ -1960,12 +1960,12 @@ mod tests {
 
   static STRING: &str = "hello world";
 
-  #[op2(fast)]
+  #[op2]
   fn op_external_make() -> *const std::ffi::c_void {
     STRING.as_ptr() as _
   }
 
-  #[op2(fast)]
+  #[op2]
   fn op_external_process(
     input: *const std::ffi::c_void,
   ) -> *const std::ffi::c_void {
@@ -1983,12 +1983,12 @@ mod tests {
     Ok(())
   }
 
-  #[op2(fast)]
+  #[op2]
   fn op_external_make_ptr(#[bigint] value: u64) -> *const std::ffi::c_void {
     value as _
   }
 
-  #[op2(fast)]
+  #[op2]
   fn op_external_process_ptr(
     input: *const std::ffi::c_void,
     #[number] offset: isize,
@@ -2016,19 +2016,19 @@ mod tests {
 
   external!(ExternalObject, "test external object");
 
-  #[op2(fast)]
+  #[op2]
   fn op_typed_external() -> *const std::ffi::c_void {
     // This operation is safe because we know
     ExternalPointer::new(ExternalObject(RefCell::new(42))).into_raw()
   }
 
-  #[op2(fast)]
+  #[op2]
   fn op_typed_external_process(ptr: *const std::ffi::c_void) {
     let ptr = ExternalPointer::<ExternalObject>::from_raw(ptr);
     *(unsafe { ptr.unsafely_deref() }.0.borrow_mut()) += 1;
   }
 
-  #[op2(fast)]
+  #[op2]
   fn op_typed_external_take(ptr: *const std::ffi::c_void) -> u32 {
     let ptr = ExternalPointer::<ExternalObject>::from_raw(ptr);
     *unsafe { ptr.unsafely_take() }.0.borrow()

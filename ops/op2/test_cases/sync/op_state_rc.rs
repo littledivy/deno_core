@@ -6,5 +6,5 @@ use deno_core::OpState;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-#[op2(fast)]
+#[op2]
 fn op_state_rc(_state: Rc<RefCell<OpState>>) {}

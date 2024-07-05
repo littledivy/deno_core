@@ -6,27 +6,27 @@ use deno_core::v8;
 
 // Collect a few examples that we'll smoke test when not running on the CI.
 
-#[op2(fast)]
+#[op2]
 pub fn op_fast(x: u32) -> u32 {
   x
 }
 
-#[op2(fast)]
+#[op2]
 fn op_buffers(#[buffer] _a: &[u8], #[buffer(copy)] _b: Vec<u8>) {}
 
 struct Something {}
 
-#[op2(fast)]
+#[op2]
 fn op_state_rc(
   #[state] _arg: &Something,
   #[state] _arg_opt: Option<&Something>,
 ) {
 }
 
-#[op2(fast)]
+#[op2]
 fn op_v8_1(_s: v8::Local<v8::String>) {}
 
-#[op2(fast)]
+#[op2]
 fn op_v8_2(_s: &v8::String) {}
 
 #[op2]
@@ -37,7 +37,7 @@ pub type Int32 = i32;
 pub type Uint16 = u16;
 pub type Uint32 = u32;
 
-#[op2(fast)]
+#[op2]
 #[smi]
 fn op_smi_unsigned_return(
   #[smi] a: Int16,
@@ -48,7 +48,7 @@ fn op_smi_unsigned_return(
   a as Uint32 + b as Uint32 + c as Uint32 + d as Uint32
 }
 
-#[op2(fast)]
+#[op2]
 #[smi]
 fn op_smi_signed_return(
   #[smi] a: Int16,

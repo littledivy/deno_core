@@ -6,7 +6,7 @@
 use deno_core::{op2, extension};
 
 // Declare an op.
-#[op2(fast)]
+#[op2]
 pub fn op_add(a: i32, b: i32) -> i32 {
   a + b
 }

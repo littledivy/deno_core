@@ -20,7 +20,7 @@ error: unused import: `std::future::Future`
 error[E0597]: `handle_` does not live long enough
   --> ../op2/test_cases_fail/lifetimes.rs:12:1
    |
-12 | #[op2(fast)]
+12 | #[op2]
    | ^^^^^^^^^^^-
    | |          |
    | |          `handle_` dropped here while still borrowed
@@ -32,7 +32,7 @@ error[E0597]: `handle_` does not live long enough
 error[E0597]: `arg0_temp` does not live long enough
   --> ../op2/test_cases_fail/lifetimes.rs:15:1
    |
-15 | #[op2(fast)]
+15 | #[op2]
    | ^^^^^^^^^^^-
    | |          |
    | |          `arg0_temp` dropped here while still borrowed

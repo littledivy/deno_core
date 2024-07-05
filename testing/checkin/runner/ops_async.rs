@@ -29,7 +29,7 @@ pub async fn op_async_yield() {
   tokio::task::yield_now().await
 }
 
-#[op2(fast)]
+#[op2]
 pub fn op_async_barrier_create(
   #[state] test_data: &mut TestData,
   #[string] name: String,

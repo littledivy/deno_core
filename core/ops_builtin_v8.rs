@@ -1047,7 +1047,7 @@ fn write_line_and_col_to_ret_buf(
 // 2: mapped line, column, and file name. new line, column, and file name are in
 //    ret_buf. retrieve file name by calling `op_apply_source_map_filename`
 //    immediately after this op returns.
-#[op2(fast)]
+#[op2]
 #[smi]
 pub fn op_apply_source_map(
   state: &JsRuntimeState,

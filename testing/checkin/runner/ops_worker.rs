@@ -154,7 +154,7 @@ async fn run_worker_task(
   Ok(())
 }
 
-#[op2(fast)]
+#[op2]
 pub fn op_worker_send(
   #[cppgc] worker: &WorkerControl,
   #[string] message: String,
@@ -207,7 +207,7 @@ pub async fn op_worker_await_close(#[cppgc] worker: &WorkerControl) {
   }
 }
 
-#[op2(fast)]
+#[op2]
 pub fn op_worker_terminate(
   #[cppgc] worker: &WorkerControl,
   state: Rc<RefCell<OpState>>,

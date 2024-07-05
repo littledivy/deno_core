@@ -3,11 +3,11 @@
 deno_ops_compile_test_runner::prelude!();
 
 /// This is a doc comment.
-#[op2(fast)]
+#[op2]
 #[cfg(windows)]
 pub fn op_maybe_windows() -> () {}
 
 /// This is a doc comment.
-#[op2(fast)]
+#[op2]
 #[cfg(not(windows))]
 pub fn op_maybe_windows() -> () {}

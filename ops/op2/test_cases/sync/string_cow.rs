@@ -4,7 +4,7 @@ deno_ops_compile_test_runner::prelude!();
 
 use std::borrow::Cow;
 
-#[op2(fast)]
+#[op2]
 fn op_string_cow(#[string] s: Cow<str>) -> u32 {
   s.len() as _
 }

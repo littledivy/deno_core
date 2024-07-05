@@ -2,7 +2,7 @@
 #![deny(warnings)]
 deno_ops_compile_test_runner::prelude!();
 
-#[op2(fast)]
+#[op2]
 #[bigint]
 pub fn op_bigint() -> u64 {
   0

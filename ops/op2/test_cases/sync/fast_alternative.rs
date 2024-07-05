@@ -10,7 +10,7 @@ fn op_slow(_scope: &v8::HandleScope, a: u32, b: u32) -> u32 {
   a + b
 }
 
-#[op2(fast)]
+#[op2]
 fn op_fast(a: u32, b: u32) -> u32 {
   a + b
 }
@@ -23,7 +23,7 @@ fn op_slow_generic<T: Trait>(_scope: &v8::HandleScope, a: u32, b: u32) -> u32 {
   a + b
 }
 
-#[op2(fast)]
+#[op2]
 fn op_fast_generic<T: Trait>(a: u32, b: u32) -> u32 {
   a + b
 }

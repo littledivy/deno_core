@@ -129,7 +129,7 @@ builtin_ops! {
   ops_builtin_v8::op_leak_tracing_get
 }
 
-#[op2(fast)]
+#[op2]
 pub fn op_panic(#[string] message: String) {
   #[allow(clippy::print_stderr)]
   {
@@ -150,7 +150,7 @@ pub fn op_resources(state: &mut OpState) -> Vec<(ResourceId, String)> {
     .collect()
 }
 
-#[op2(fast)]
+#[op2]
 fn op_add(a: i32, b: i32) -> i32 {
   a + b
 }
@@ -161,7 +161,7 @@ pub async fn op_add_async(a: i32, b: i32) -> i32 {
   a + b
 }
 
-#[op2(fast)]
+#[op2]
 pub fn op_void_sync() {}
 
 #[allow(clippy::unused_async)]
@@ -185,7 +185,7 @@ pub async fn op_error_async_deferred() -> Result<(), Error> {
 pub async fn op_void_async_deferred() {}
 
 /// Remove a resource from the resource table.
-#[op2(fast)]
+#[op2]
 pub fn op_close(
   state: Rc<RefCell<OpState>>,
   #[smi] rid: ResourceId,
@@ -197,7 +197,7 @@ pub fn op_close(
 
 /// Try to remove a resource from the resource table. If there is no resource
 /// with the specified `rid`, this is a no-op.
-#[op2(fast)]
+#[op2]
 pub fn op_try_close(state: Rc<RefCell<OpState>>, #[smi] rid: ResourceId) {
   if let Ok(resource) = state.borrow_mut().resource_table.take_any(rid) {
     resource.close();
@@ -205,7 +205,7 @@ pub fn op_try_close(state: Rc<RefCell<OpState>>, #[smi] rid: ResourceId) {
 }
 
 /// Builtin utility to print to stdout/stderr
-#[op2(fast)]
+#[op2]
 pub fn op_print(#[string] msg: &str, is_err: bool) -> Result<(), Error> {
   if is_err {
     stderr().write_all(msg.as_bytes())?;
@@ -233,7 +233,7 @@ impl Resource for WasmStreamingResource {
 }
 
 /// Feed bytes to WasmStreamingResource.
-#[op2(fast)]
+#[op2]
 pub fn op_wasm_streaming_feed(
   state: Rc<RefCell<OpState>>,
   #[smi] rid: ResourceId,
@@ -249,7 +249,7 @@ pub fn op_wasm_streaming_feed(
   Ok(())
 }
 
-#[op2(fast)]
+#[op2]
 pub fn op_wasm_streaming_set_url(
   state: &mut OpState,
   #[smi] rid: ResourceId,
@@ -321,7 +321,7 @@ async fn op_write(
   Ok(resp.nwritten() as u32)
 }
 
-#[op2(fast)]
+#[op2]
 fn op_read_sync(
   state: Rc<RefCell<OpState>>,
   #[smi] rid: ResourceId,
@@ -331,7 +331,7 @@ fn op_read_sync(
   resource.read_byob_sync(data).map(|n| n as u32)
 }
 
-#[op2(fast)]
+#[op2]
 fn op_write_sync(
   state: Rc<RefCell<OpState>>,
   #[smi] rid: ResourceId,
@@ -393,7 +393,7 @@ fn op_str_byte_length(
 }
 
 /// Creates a [`CancelHandle`] resource that can be used to cancel invocations of certain ops.
-#[op2(fast)]
+#[op2]
 #[smi]
 pub fn op_cancel_handle(state: &mut OpState) -> u32 {
   state.resource_table.add(CancelHandle::new())
@@ -405,7 +405,7 @@ fn op_encode_binary_string(#[buffer] s: &[u8]) -> ByteString {
   ByteString::from(s)
 }
 
-#[op2(fast)]
+#[op2]
 fn op_is_terminal(
   state: &mut OpState,
   #[smi] rid: ResourceId,

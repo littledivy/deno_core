@@ -2,7 +2,7 @@
 #![deny(warnings)]
 deno_ops_compile_test_runner::prelude!();
 
-#[op2(fast)]
+#[op2]
 pub fn op_void_with_result() -> std::io::Result<()> {
   Ok(())
 }

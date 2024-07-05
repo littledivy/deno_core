@@ -693,13 +693,13 @@ fn test_has_tick_scheduled() {
   static MACROTASK: AtomicUsize = AtomicUsize::new(0);
   static NEXT_TICK: AtomicUsize = AtomicUsize::new(0);
 
-  #[op2(fast)]
+  #[op2]
   fn op_macrotask() -> Result<(), AnyError> {
     MACROTASK.fetch_add(1, Ordering::Relaxed);
     Ok(())
   }
 
-  #[op2(fast)]
+  #[op2]
   fn op_next_tick() -> Result<(), AnyError> {
     NEXT_TICK.fetch_add(1, Ordering::Relaxed);
     Ok(())
@@ -804,7 +804,7 @@ async fn test_promise_rejection_handler_generic(
   case: &'static str,
   error: Option<&'static str>,
 ) {
-  #[op2(fast)]
+  #[op2]
   fn op_breakpoint() {}
 
   deno_core::extension!(test_ext, ops = [op_breakpoint]);

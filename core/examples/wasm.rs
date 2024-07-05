@@ -28,13 +28,13 @@ fn op_get_wasm_module() -> Vec<u8> {
   include_bytes!("wasm.wasm").as_slice().to_vec()
 }
 
-#[op2(fast)]
+#[op2]
 fn op_wasm(state: &mut OpState, #[memory(caller)] memory: Option<&mut [u8]>) {
   let memory = memory.unwrap_or_else(|| wasm_memory_unchecked(state));
   memory[0] = 69;
 }
 
-#[op2(fast)]
+#[op2]
 fn op_wasm_mem(memory: &v8::WasmMemoryObject) {
   // let memory = memory.unwrap_or_else(|| wasm_memory_unchecked(state));
   // memory[0] = 69;

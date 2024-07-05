@@ -7,10 +7,10 @@ struct Wrap;
 
 impl GarbageCollected for Wrap {}
 
-#[op2(fast)]
+#[op2]
 fn op_cppgc_object(#[cppgc] _resource: &Wrap) {}
 
-#[op2(fast)]
+#[op2]
 fn op_option_cppgc_object(#[cppgc] _resource: Option<&Wrap>) {}
 
 #[op2]
@@ -19,7 +19,7 @@ fn op_make_cppgc_object() -> Wrap {
   Wrap
 }
 
-#[op2(fast)]
+#[op2]
 fn op_use_cppgc_object(#[cppgc] _wrap: &Wrap) {}
 
 #[op2]
@@ -28,5 +28,5 @@ fn op_make_cppgc_object_option() -> Option<Wrap> {
     Some(Wrap)
 }
 
-#[op2(fast)]
+#[op2]
 fn op_use_cppgc_object_option(#[cppgc] _wrap: &Wrap)  {}

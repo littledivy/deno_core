@@ -3,5 +3,5 @@
 deno_ops_compile_test_runner::prelude!();
 
 /// This is a doc comment.
-#[op2(fast)]
+#[op2]
 pub fn op_has_doc_comment() -> () {}
