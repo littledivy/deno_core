@@ -45,13 +45,13 @@ deno_core::extension!(
 #[op2]
 pub fn op_void() {}
 
-#[op2(nofast)]
+#[op2]
 pub fn op_void_nofast() {}
 
 #[op2]
 pub fn op_void_metrics() {}
 
-#[op2(nofast)]
+#[op2]
 pub fn op_void_nofast_metrics() {}
 
 #[op2]
@@ -91,7 +91,7 @@ pub fn op_local(_s: v8::Local<v8::String>) {}
 pub fn op_local_scope(_scope: &mut v8::HandleScope, _s: v8::Local<v8::String>) {
 }
 
-#[op2(nofast)]
+#[op2]
 pub fn op_local_nofast(_s: v8::Local<v8::String>) {}
 
 #[op2]
@@ -107,7 +107,7 @@ pub fn op_global_scope(
 #[op2]
 pub fn op_scope(_scope: &mut v8::HandleScope) {}
 
-#[op2(nofast)]
+#[op2]
 pub fn op_isolate_nofast(_isolate: *mut v8::Isolate) {}
 
 #[op2]
@@ -127,7 +127,7 @@ pub fn op_bigint_return() -> u64 {
 #[op2]
 pub fn op_external(_input: *const c_void) {}
 
-#[op2(nofast)]
+#[op2]
 pub fn op_external_nofast(_input: *const c_void) {}
 
 #[op2]
@@ -136,7 +136,7 @@ pub fn op_buffer(#[buffer] _buffer: &[u8]) {}
 #[op2]
 pub fn op_buffer_jsbuffer(#[buffer] _buffer: JsBuffer) {}
 
-#[op2(nofast)]
+#[op2]
 pub fn op_buffer_nofast(#[buffer] _buffer: &[u8]) {}
 
 #[op2]

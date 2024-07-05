@@ -200,9 +200,7 @@ pub fn op_lazy_load_esm(
   module_map_rc.lazy_load_esm_module(scope, &module_specifier)
 }
 
-// We run in a `nofast` op here so we don't get put into a `DisallowJavascriptExecutionScope` and we're
-// allowed to touch JS heap.
-#[op2(nofast)]
+#[op2]
 pub fn op_queue_microtask(
   isolate: *mut v8::Isolate,
   cb: v8::Local<v8::Function>,
@@ -213,9 +211,7 @@ pub fn op_queue_microtask(
   }
 }
 
-// We run in a `nofast` op here so we don't get put into a `DisallowJavascriptExecutionScope` and we're
-// allowed to touch JS heap.
-#[op2(nofast, reentrant)]
+#[op2(reentrant)]
 pub fn op_run_microtasks(isolate: *mut v8::Isolate) {
   // SAFETY: we know v8 provides us with a valid, non-null isolate
   unsafe {
@@ -953,10 +949,8 @@ pub fn op_set_wasm_streaming_callback(
   Ok(())
 }
 
-// This op is re-entrant as it makes a v8 call. It also cannot be fast because
-// we require a JS execution scope.
 #[allow(clippy::let_and_return)]
-#[op2(nofast, reentrant)]
+#[op2(reentrant)]
 pub fn op_abort_wasm_streaming(
   state: Rc<RefCell<OpState>>,
   rid: u32,

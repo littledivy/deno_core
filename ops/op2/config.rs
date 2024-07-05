@@ -8,10 +8,6 @@ use crate::op2::Op2Error;
 
 #[derive(Debug, Default, Eq, PartialEq)]
 pub(crate) struct MacroConfig {
-  /// Generate a fastcall method (must be fastcall compatible).
-  pub fast: bool,
-  /// Do not generate a fastcall method (must be fastcall compatible).
-  pub nofast: bool,
   /// Use other ops for the fast alternatives, rather than generating one for this op.
   pub fast_alternatives: Vec<String>,
   /// Marks an async function (either `async fn` or `fn -> impl Future`).
@@ -61,9 +57,7 @@ impl MacroConfig {
     }
 
     for flag in flags {
-      if flag == "fast" {
-        config.fast = true;
-      } else if flag.starts_with("fast(") {
+      if flag.starts_with("fast(") {
         let tokens =
           syn::parse_str::<TokenTree>(&flag[4..])?.into_token_stream();
         config.fast_alternatives = std::panic::catch_unwind(|| {
@@ -75,8 +69,6 @@ impl MacroConfig {
         })
         .map_err(|_| Op2Error::PatternMatchFailed("attribute", flag))?
         .collect::<Vec<_>>();
-      } else if flag == "nofast" {
-        config.nofast = true;
       } else if flag == "async" {
         config.r#async = true;
       } else if flag == "async(lazy)" {
@@ -103,25 +95,8 @@ impl MacroConfig {
       }
     }
 
-    // Test for invalid attribute combinations
-    if config.fast && config.nofast {
-      return Err(Op2Error::InvalidAttributeCombination("fast", "nofast"));
-    }
-    if config.fast && !config.fast_alternatives.is_empty() {
-      return Err(Op2Error::InvalidAttributeCombination("fast", "fast(...)"));
-    }
     if config.fast_alternatives.len() > 1 {
       return Err(Op2Error::TooManyFastAlternatives);
-    }
-    if config.fast
-      && (config.r#async && !config.async_lazy && !config.async_deferred)
-    {
-      return Err(Op2Error::InvalidAttributeCombination("fast", "async"));
-    }
-    if config.nofast
-      && (config.r#async && !config.async_lazy && !config.async_deferred)
-    {
-      return Err(Op2Error::InvalidAttributeCombination("nofast", "async"));
     }
 
     Ok(config)
@@ -244,14 +219,6 @@ mod tests {
       "(method(A))",
       MacroConfig {
         method: Some("A".to_owned()),
-        ..Default::default()
-      },
-    );
-    test_parse(
-      "(fast, method(T))",
-      MacroConfig {
-        method: Some("T".to_owned()),
-        fast: true,
         ..Default::default()
       },
     );

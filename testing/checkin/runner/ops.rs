@@ -82,7 +82,7 @@ impl Stateful {
     self.name.clone()
   }
 
-  #[op2(fast, method(Stateful))]
+  #[op2(method(Stateful))]
   #[smi]
   fn len(&self) -> u32 {
     self.name.len() as u32

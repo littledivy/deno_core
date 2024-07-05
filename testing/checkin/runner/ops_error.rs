@@ -10,12 +10,12 @@ pub async fn op_async_throw_error_eager() -> Result<(), Error> {
   Err(type_error("Error"))
 }
 
-#[op2(async(deferred), fast)]
+#[op2(async(deferred))]
 pub async fn op_async_throw_error_deferred() -> Result<(), Error> {
   Err(type_error("Error"))
 }
 
-#[op2(async(lazy), fast)]
+#[op2(async(lazy))]
 pub async fn op_async_throw_error_lazy() -> Result<(), Error> {
   Err(type_error("Error"))
 }

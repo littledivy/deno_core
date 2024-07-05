@@ -175,13 +175,13 @@ pub async fn op_error_async() -> Result<(), Error> {
 }
 
 #[allow(clippy::unused_async)]
-#[op2(async(deferred), fast)]
+#[op2(async(deferred))]
 pub async fn op_error_async_deferred() -> Result<(), Error> {
   Err(Error::msg("error"))
 }
 
 #[allow(clippy::unused_async)]
-#[op2(async(deferred), fast)]
+#[op2(async(deferred))]
 pub async fn op_void_async_deferred() {}
 
 /// Remove a resource from the resource table.

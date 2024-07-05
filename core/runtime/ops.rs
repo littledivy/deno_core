@@ -2044,13 +2044,13 @@ mod tests {
     Ok(())
   }
 
-  #[op2(nofast)]
+  #[op2]
   fn op_isolate_run_microtasks(isolate: *mut v8::Isolate) {
     // SAFETY: testing
     unsafe { isolate.as_mut().unwrap().perform_microtask_checkpoint() };
   }
 
-  #[op2(nofast)]
+  #[op2]
   fn op_isolate_queue_microtask(
     isolate: *mut v8::Isolate,
     cb: v8::Local<v8::Function>,
@@ -2164,12 +2164,12 @@ mod tests {
     Ok(())
   }
 
-  #[op2(async(deferred), fast)]
+  #[op2(async(deferred))]
   pub async fn op_async_deferred_success() -> Result<u32, Error> {
     Ok(42)
   }
 
-  #[op2(async(deferred), fast)]
+  #[op2(async(deferred))]
   pub async fn op_async_deferred_error() -> Result<(), Error> {
     bail!("whoops")
   }
@@ -2192,12 +2192,12 @@ mod tests {
     Ok(())
   }
 
-  #[op2(async(lazy), fast)]
+  #[op2(async(lazy))]
   pub async fn op_async_lazy_success() -> Result<u32, Error> {
     Ok(42)
   }
 
-  #[op2(async(lazy), fast)]
+  #[op2(async(lazy))]
   pub async fn op_async_lazy_error() -> Result<(), Error> {
     bail!("whoops")
   }

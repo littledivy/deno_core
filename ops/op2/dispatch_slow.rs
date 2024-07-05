@@ -58,14 +58,14 @@ pub(crate) fn generate_dispatch_slow_call(
 }
 
 pub(crate) fn generate_dispatch_slow(
-  config: &MacroConfig,
+  _config: &MacroConfig,
   generator_state: &mut GeneratorState,
   signature: &ParsedSignature,
 ) -> Result<TokenStream, V8SignatureMappingError> {
   let mut output = TokenStream::new();
 
   // Fast ops require the slow op to check op_ctx for the last error
-  if config.fast && matches!(signature.ret_val, RetVal::Result(_)) {
+  if matches!(signature.ret_val, RetVal::Result(_)) {
     generator_state.needs_opctx = true;
     let throw_exception = throw_exception(generator_state);
     // If the fast op returned an error, we must throw it rather than doing work.

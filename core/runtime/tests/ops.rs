@@ -560,12 +560,12 @@ pub async fn op_async_error() -> Result<(), AnyError> {
   bail!("dead");
 }
 
-#[op2(async(deferred), fast)]
+#[op2(async(deferred))]
 pub async fn op_async_deferred() {
   println!("op_async_deferred!");
 }
 
-#[op2(async(lazy), fast)]
+#[op2(async(lazy))]
 pub async fn op_async_lazy() {
   println!("op_async_lazy!");
 }

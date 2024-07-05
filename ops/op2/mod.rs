@@ -47,12 +47,6 @@ pub enum Op2Error {
   V8SignatureMappingError(#[from] V8SignatureMappingError),
   #[error("Failed to parse signature")]
   SignatureError(#[from] SignatureError),
-  #[error("This op cannot use both ({0}) and ({1})")]
-  InvalidAttributeCombination(&'static str, &'static str),
-  #[error("This op is fast-compatible and should be marked as (fast)")]
-  ShouldBeFast,
-  #[error("This op is not fast-compatible and should not be marked as ({0})")]
-  ShouldNotBeFast(&'static str),
   #[error("This op is async and should be marked as (async)")]
   ShouldBeAsync,
   #[error("This op is not async and should not be marked as (async)")]
@@ -208,28 +202,13 @@ fn generate_op2(
   let (fast_definition, fast_definition_metrics, fast_fn) =
     match generate_dispatch_fast(&config, &mut generator_state, &signature)? {
       Some((fast_definition, fast_metrics_definition, fast_fn)) => {
-        if !config.fast && !config.nofast && config.fast_alternatives.is_empty()
-        {
-          return Err(Op2Error::ShouldBeFast);
-        }
-        // nofast requires the function to be valid for fast
-        if config.nofast {
-          (quote!(None), quote!(None), quote!())
-        } else {
           (
             quote!(Some({#fast_definition})),
             quote!(Some({#fast_metrics_definition})),
             fast_fn,
           )
-        }
       }
       None => {
-        if config.fast {
-          return Err(Op2Error::ShouldNotBeFast("fast"));
-        }
-        if config.nofast {
-          return Err(Op2Error::ShouldNotBeFast("nofast"));
-        }
         (quote!(None), quote!(None), quote!())
       }
     };
@@ -452,7 +431,6 @@ deno_ops_compile_test_runner::prelude!();";
 
     parse_md(md, |line, components| {
       let type_param = components.first().unwrap().to_owned();
-      let fast = components.get(1).unwrap() == &"X";
       let v8 = components.get(2).unwrap().to_owned();
       let notes = components.get(3).unwrap().to_owned();
       let (attr, ty) = if type_param.starts_with('#') {
@@ -471,15 +449,12 @@ deno_ops_compile_test_runner::prelude!();";
           .expect("Failed to parse signature");
         println!("Parsed signature: {sig:?}");
         generate_op2(
-          MacroConfig {
-            fast,
-            ..Default::default()
-          },
+          Default::default(),
           function,
         )
         .expect("Failed to generate op");
       }
-      actual += &format!("<tr>\n<td>\n\n```text\n{}\n```\n\n</td><td>\n{}\n</td><td>\n{}\n</td><td>\n{}\n</td></tr>\n", type_param, if fast { "✅" } else { "" }, v8, notes);
+      actual += &format!("<tr>\n<td>\n\n```text\n{}\n```\n\n</td><td>\n{}\n</td><td>\n{}\n</td><td>\n{}\n</td></tr>\n", type_param,  "✅", v8, notes);
     });
     actual += "</table>\n";
     actual += end_separator;
@@ -509,7 +484,6 @@ deno_ops_compile_test_runner::prelude!();";
 
     parse_md(md, |line, components| {
       let type_param = components.first().unwrap().to_owned();
-      let fast = components.get(1).unwrap() == &"X";
       let async_support = components.get(2).unwrap() == &"X";
       let v8 = components.get(3).unwrap().to_owned();
       let notes = components.get(4).unwrap().to_owned();
@@ -529,10 +503,7 @@ deno_ops_compile_test_runner::prelude!();";
           .expect("Failed to parse signature");
         println!("Parsed signature: {sig:?}");
         generate_op2(
-          MacroConfig {
-            fast,
-            ..Default::default()
-          },
+          Default::default(),
           function,
         )
         .expect("Failed to generate op");
@@ -555,7 +526,7 @@ deno_ops_compile_test_runner::prelude!();";
           .expect("Failed to generate op");
         }
       }
-      actual += &format!("<tr>\n<td>\n\n```text\n{}\n```\n\n</td><td>\n{}\n</td><td>\n{}\n</td><td>\n{}\n</td><td>\n{}\n</td></tr>\n", type_param, if fast { "✅" } else { "" }, if async_support { "✅" } else { "" }, v8, notes);
+      actual += &format!("<tr>\n<td>\n\n```text\n{}\n```\n\n</td><td>\n{}\n</td><td>\n{}\n</td><td>\n{}\n</td><td>\n{}\n</td></tr>\n", type_param, "✅", if async_support { "✅" } else { "" }, v8, notes);
     });
 
     actual += "</table>\n";
